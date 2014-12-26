@@ -1,0 +1,245 @@
+body {
+  font-family: "PT Sans", sans-serif;
+  font-size: 20px;
+  background: #fcfcfa;
+  color: #333;
+  margin: 1em auto 4em auto;
+  position: relative;
+  width: 960px;
+}
+.about {
+  display: none;
+  height: 0;
+}
+button {
+  font-family: "PT Sans", sans-serif;
+  font-size: 20px;
+}
+.navBar {
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: -2px;
+  color: black;
+}
+.navBar.nav-pills>li>a {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.description {
+  font-size: 20px;
+  background: #cae3fc;
+  padding: 20px;
+}
+.legend,
+.picker {
+  margin-left: 20px;
+}
+.picker button,
+.picker input,
+.picker label,
+.inputSection input,
+.inputSection label {
+  display: inline-block;
+}
+.picker label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.instruct {
+  margin-top: 20px;
+}
+.avg {
+  margin-left: 20px;
+}
+#gpxFile {
+  height: 30px;
+  width: 600px;
+  font-family: "PT Sans", sans-serif;
+  font-size: 20px;
+}
+#downloadGPX {
+  text-decoration: none;
+  color: black;
+}
+#newXML {
+  margin-top: 20px;
+  width: 100%;
+  height: 600px;
+}
+#chart {
+  font: 10px sans-serif;
+  width: 960px;
+  height: 500px;
+}
+#mini {
+  font: 10px sans-serif;
+  width: 960px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+  stroke-width: 1px;
+}
+.line {
+  fill: none;
+  stroke-width: 1px;
+}
+div.tooltip {
+  position: absolute;
+  text-align: left;
+  padding: 10px;
+  font: 16px sans-serif;
+  line-height: 18px;
+  background: lightsteelblue;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.googleStatus{
+  display: none;
+  margin-left: 20px;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  color: green;
+}
+.error {
+  color: red;
+}
+.eleStatus {
+  display: none;
+  margin-left: 20px;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  color: red;
+}
+.newStuff {
+  display: none;
+  height: 0;
+  background: #cae3fc;
+  font-size: 20px;
+}
+.downloadStatus {
+  display: none;
+  margin-left: 20px;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  color: red;
+}
+.inputSection label{
+  display: inline-block;
+  text-align :right;
+  width: 140px;
+  margin-right: 10px;
+  font-size: 20px;
+}
+.inputSection input {
+  width: 700px;
+  font-family: "PT Sans", sans-serif;
+  font-size: 20px;
+  margin-top: 5px;
+}
+.instruct button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.smoothing button{
+  width: 200px;
+}
+.smoothing label {
+  margin-right: 10px;
+}
+input.number {
+  width:  60px;
+  height: 22px;
+  text-align: right;
+  font-family: "PT Sans", sans-serif;
+  font-size: 20px;
+}
+/* New Stuff */
+.resize path {
+  fill: #666;
+  fill-opacity: .8;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.brush .extent {
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+rect.pane {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+.modified {
+  stroke: green;
+  fill: transparent;
+}
+
+.original {
+  stroke: blue;
+  fill: transparent;
+}
+
+#mini .modified,
+#mini .original {
+  stroke-width: 3;
+}
+
+circle.modified {
+  fill: green;
+}
+
+circle.original {
+  fill: blue;
+}
+.legend .swatch {
+  width:40px;
+  height: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+  margin-right: 10px;
+}
+
+.modified .swatch {
+  margin-left: 20px;
+  background-color:green;
+}
+
+.original .swatch{
+  background-color: blue;
+}
+
+.legend .average {
+  margin-left: 20px;
+}
+
+#slopeDistance {
+  display: none;
+}
+
+.checkbox.inline.chkHide {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  margin-left: 20px;
+}
+
+.chkHide label {
+  font-size: 20px;
+}
+
+#elosoft {
+  display: none;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+}
