@@ -1,7 +1,7 @@
 gpx-smoother
 ============
 
-The GPX Smoother lets you apply a few different "smoothing" algorithms to a GPX file for riding the route on a trainer.
+The GPX Smoother lets you apply a few different "smoothing" algorithms to a GPX file for riding the route on a trainer.  The smoother is written in html, javascript, and css and does not require a server to run.
 
 I love riding GPS routes on my Tacx trainer, but I wasn't happy with the built-in functionality for changing the elevation profile of a ride. The built-in smoothing is very slow and still leaves a lot of spikes in elevation. It is next to impossible to remove steep down-hill grades that I don't want as part of my indoor training. This program was created so that I can ride interesting routes, and set the slope where I want it.
 
