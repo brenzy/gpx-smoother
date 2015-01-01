@@ -30,12 +30,9 @@ $(document).ready(function(){
   var smoothValues = [];
   var ABOUT_HEIGHT = "400px";
   var UPDATE_HEIGHT = "600px";
-  var graph;
-  var gpxFile;
   var xml, newXML;
   var rawTotalSlope;
   var totalDistance;
-  var fileName;
   var eltFileName = $("#fileName");
   var eltGPXName = $("#gpxName");
   var eltGPXDescription = $("#gpxDescription");
@@ -46,14 +43,13 @@ $(document).ready(function(){
   var eltAddElevation =  $("#addElevation");
   var eltGoogleStatus = $('.googleStatus');
   var eltNumPoints = $("#numPoints");
+  var graph = new AreaGraph();
+  var gpxFile= new GPXFile();
+  var fileName = DEFAULT_FILENAME;
+  var gpxName = gpxFile.DEFAULT_GPXNAME;
+  var gpxDescription = gpxFile.DEFAULT_DESCRIPTION;
 
   function init() {
-
-    graph = new AreaGraph();
-    gpxFile = new GPXFile();
-    fileName = DEFAULT_FILENAME;
-    gpxName = gpxFile.DEFAULT_GPXNAME;
-    gpxDescription = gpxFile.DEFAULT_DESCRIPTION;
 
     $('#gpxFile').change(handleFileSelect);
     $("#downloadGPX").click(onDownloadGPX);

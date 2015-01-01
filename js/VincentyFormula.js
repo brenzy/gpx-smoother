@@ -6,18 +6,21 @@
 /*       http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf                                             */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-/**
- * Calculates geodetic distance between two points specified by latitude/longitude using
- * Vincenty inverse formula for ellipsoids
- *
- * @param   {Number} lat1, lon1: first point in decimal degrees
- * @param   {Number} lat2, lon2: second point in decimal degrees
- * @returns (Number} distance in metres between points
- */
 function toRad(value) {
   /** Converts numeric degrees to radians */
   return value * Math.PI / 180;
 }
+
+/**
+ * Calculates geodetic distance between two points specified by latitude/longitude using
+ * Vincenty inverse formula for ellipsoids
+ *
+ * @param   {number} lat1 - latitude first point, in decimal degrees
+ * @param   {number} lon1 - longitude first point, in decimal degrees
+ * @param   {number} lat2 - latitude second point, in decimal degrees
+ * @param   {number} lon2 - longitude second point, in decimal degrees
+ * @returns {number} - distance in metres between points
+ */
 
 function distVincenty(lat1, lon1, lat2, lon2) {
   var a = 6378137, b = 6356752.314245,  f = 1/298.257223563;  // WGS-84 ellipsoid params
@@ -45,7 +48,9 @@ function distVincenty(lat1, lon1, lat2, lon2) {
       (sigma + C*sinSigma*(cos2SigmaM+C*cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)));
   } while (Math.abs(lambda-lambdaP) > 1e-12 && --iterLimit>0);
 
-  if (iterLimit==0) return NaN  // formula failed to converge
+  if (iterLimit==0) {
+    return NaN;  // formula failed to converge
+  }
 
   var uSq = cosSqAlpha * (a*a - b*b) / (b*b);
   var A = 1 + uSq/16384*(4096+uSq*(-768+uSq*(320-175*uSq)));
