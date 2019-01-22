@@ -7,8 +7,8 @@
   <LINK href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <LINK href="css/smoother.css" rel="stylesheet" type="text/css">
 
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/utilities.js"></script>
@@ -49,7 +49,7 @@
         to smooth. This allows you create a ride similar to a Slope-Distance Catalyst ride. </p>
 
       <p>
-        The code for the GPX Smoother is on github at https://github.com/brenzy/gpx-smoother. </p>
+        The code for the GPX Smoother is now on github at https://github.com/brenzy/gpx-smoother. </p>
 
       <p>
         This is a work in progress. Drop me a line at <span class="mailme"></span> to request
@@ -60,6 +60,10 @@
 
   <div class="newStuff">
     <div class="description">
+      <p>Functionality Change(January 21, 2019):<br/> When an elevation tag is missing, the GPX Smoother will add an
+        elevation tag containing the same value as the previous point.  If there is no elevation in the GPX file an
+        arbitrary value of 100 metres will be used for elevation.</p>
+
       <p>New Functionality (January 1, 2015):<br/>Added elevation profile and changed slope to a
         step chart.</p>
 
@@ -89,7 +93,7 @@
       <p>New Functionality (November 24, 2013):<br/> GPX files that are exported from other programs
         (like Map My Ride), often do not contain elevation data. The Tacx software will not import
         GPX files if the elevation is missing (or set to zero on the first point). The smoother will
-        now insert an elevation of 100 meters when an elevation is missing. To get the correct
+        now insert an elevation of 100 metres when an elevation is missing. To get the correct
         elevation values, import the resulting GPX back into the Tacx trainer editor and select
         "Altitude" - "Load From Web". </p>
     </div>
@@ -98,7 +102,7 @@
   <div class="smootherView">
     <div class="instruct">1. Select a gpx file:</div>
     <div class="picker"><input id="gpxFile" type="file" accept=".gpx"/></div>
-    <span class="eleStatus">Missing elevation tags have been added and set to a value of 100 meters.</span>
+    <span class="eleStatus">Missing elevation tags have been added and set to the value of the previous point or 100 metres.</span>
 
     <div class="instruct">2. If your gpx file does not contain elevation data, you can add elevation
       values. This could be a slow process, depending on the number of points in your gpx file. The
@@ -129,7 +133,7 @@
       </div>
       <div class="picker">
         <button id="elevate">Elevate Values</button>
-        <label for="elevateValue">Shift in meters up or down:</label>
+        <label for="elevateValue">Shift in metres up or down:</label>
         <input class="number" id="elevateValue" type="number" value="0"/>
       </div>
     </div>

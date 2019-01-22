@@ -117,9 +117,14 @@ GPXFile = function() {
       if (eleElevation.length > 0) {
         point.ele =  Number(eleElevation[0].textContent);
       } else {
-        // Add the elevation, and set it to an arbitrary 100 meters because TACX
-        // won't accept a track at zero elevation
-        point.ele =  100;
+        // Add the elevation. TACX won't accept a track at zero elevation so
+        // set it to the value of the previous point, or an arbitrary value of
+        // 100 meters if there is no previous elevation.
+        if (previous && previous.ele) {
+          point.ele =  previous;
+        } else {
+          point.ele =  100;
+        }
         bElevationAdded = true;
       }
       point.distance = 0;
