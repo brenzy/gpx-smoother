@@ -7,7 +7,7 @@
   <LINK href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <LINK href="css/smoother.css" rel="stylesheet" type="text/css">
 
-  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/utilities.js"></script>
@@ -132,6 +132,9 @@
         <a href="#">Elevation Profile</a>
       </li>
     </ul>
+    <div class="zoom-controls">
+      <button class="reset-zoom">Reset Zoom/Pan</button>
+    </div>
     <div id="chart"></div>
     <div class="instruct legend">
       <span class="original"><span class="swatch"></span><span>Original</span></span>
@@ -143,16 +146,12 @@
       </div>
       <span class="average">Average Slope:<span class="avg"></span></span>
     </div>
-    <div class="instruct">4. Slide the triangles in the graph below to zoom in on a portion of the
-      ride and to select that portion of the ride to be smoothed.
-    </div>
-    <div id="mini"></div>
 
-    <div class="instruct">5. Try different smoothing:
+    <div class="instruct">4. Try different smoothing:
       <button id="reload">Reset The Data</button>
     </div>
 
-    <div class="instruct">6.
+    <div class="instruct">5.
       <button><a href="" id="downloadGPX">Download GPX</a></button>
     </div>
     <div class="downloadStatus">This file is too large to download, please copy and paste the result
@@ -167,7 +166,7 @@
         <label for="gpxDescription">Description:</label><input id="gpxDescription" type="text" value="Created by running the ride through a smoothing algorithm."/>
       </div>
     </div>
-    <div class="instruct">7. If the download button does not work, copy (right click, Select all,
+    <div class="instruct">6. If the download button does not work, copy (right click, Select all,
       Copy) the contents of the box below (which contains the resulting gpx) and save to a gpx file.
     </div>
     <div>

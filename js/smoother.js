@@ -57,6 +57,7 @@ $(document).ready(function(){
     $('.navBar li').click(toggleView);
     $('.chartBar li').click(toggleChart);
     $(".chkHide").click(onHideOriginal);
+    $(".reset-zoom").click(resetZoom);
 
     eltGPXName.change(function() {
       updateXMLMetadata();
@@ -138,6 +139,10 @@ $(document).ready(function(){
 
   function onHideOriginal() {
     graph.showOriginal(!($('.chkHide input').is(':checked')));
+  }
+
+  function resetZoom() {
+    graph.resetZoom();
   }
 
    function smooth() {
