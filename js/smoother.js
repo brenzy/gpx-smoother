@@ -37,11 +37,7 @@ $(document).ready(function(){
   var eltGPXName = $("#gpxName");
   var eltGPXDescription = $("#gpxDescription");
   var eltDownloadStatus = $(".downloadStatus");
-  var elevationService = new google.maps.ElevationService();
-  var bElevationInProcess = false;
   var eltElevationStatus = $('.eleStatus');
-  var eltAddElevation =  $("#addElevation");
-  var eltGoogleStatus = $('.googleStatus');
   var eltNumPoints = $("#numPoints");
   var graph = new AreaGraph();
   var gpxFile= new GPXFile();
@@ -61,8 +57,6 @@ $(document).ready(function(){
     $('.navBar li').click(toggleView);
     $('.chartBar li').click(toggleChart);
     $(".chkHide").click(onHideOriginal);
-
-    eltAddElevation.click(addElevation);
 
     eltGPXName.change(function() {
       updateXMLMetadata();
@@ -146,96 +140,7 @@ $(document).ready(function(){
     graph.showOriginal(!($('.chkHide input').is(':checked')));
   }
 
-  function getNextElevationSet (nextElevation, values, elevations, sleep, requestSize) {
-    var dataLength = values.length;
-    var locations = [];
-    if (sleep == 0) {
-      eltGoogleStatus.text("Processing elevation for points " + nextElevation.toString()
-        + " to " + (nextElevation + requestSize).toString() + " out of " + dataLength.toString());
-    }
-    for (var i = 0; nextElevation + i < dataLength && i < requestSize; i++) {
-      var point = jQuery.extend(true, {},  values[nextElevation + i]);
-      var latLng = new google.maps.LatLng(point.lat.toFixed(6), point.long.toFixed(6));
-      locations.push(latLng);
-    }
-    var positionalRequest = {
-      'locations': locations
-    };
-    elevationService.getElevationForLocations(positionalRequest, function(results, status) {
-      if (status == google.maps.ElevationStatus.OK) {
-        sleep = 0;
-        var numResults = results.length;
-        for (var iResult = 0; iResult < numResults; iResult++) {
-          elevations.push(results[iResult]);
-        }
-        if (nextElevation + i < dataLength) {
-          getNextElevationSet(nextElevation + i, values, elevations, sleep, requestSize);
-        } else if (elevations.length == dataLength)  {
-          eltGoogleStatus.text("Processing elevation data.");
-          var newValues = [];
-          var previous = null;
-          var totalSlope = 0;
-          for (i = 0; i < dataLength; i++) {
-            var point = jQuery.extend(true, {},  values[i]);
-            point.ele = elevations[i].elevation;
-            point.slope = 0;
-            if (previous && point.distance) {
-              point.slope = (point.ele - previous.ele) / point.distance;
-            }
-            newValues.push(point);
-            previous = point;
-            totalSlope = totalSlope + point.slope;
-          }
-          smoothValues = newValues;
-          updateUI(smoothValues, totalSlope);
-          eltGoogleStatus.hide();
-          bElevationInProcess = false;
-        } else {
-          eltGoogleStatus.addClass("error");
-          eltGoogleStatus.text("Could not retrieve all elevations from google maps.");
-        }
-      } else {
-        if (sleep > 3000) {
-          bElevationInProcess = false;
-          eltGoogleStatus.addClass("error");
-          eltGoogleStatus.text("Could not load elevations from google maps. Status code: " +
-            status);
-        } else {
-          if (status == "UNKNOWN_ERROR") {
-            requestSize = 250;
-          }
-          sleep = sleep + 1000;
-          eltGoogleStatus.text("Re-trying elevation for points " + nextElevation.toString()
-            + " to " + (nextElevation + i).toString() + " out of " + dataLength.toString());
-          setTimeout(function(){getNextElevationSet(nextElevation, values, elevations, sleep, requestSize)},sleep);
-        }
-      }
-    });
-  }
-
-  function addElevation () {
-    if (bElevationInProcess) {
-      return;
-    }
-    var dataLength = rawValues.length;
-    if (dataLength == 0) {
-      return;
-    }
-    bElevationInProcess = true;
-    eltGoogleStatus.show();
-    eltGoogleStatus.removeClass("error");
-    eltGoogleStatus.text("Processing...");
-    var values = rawValues;
-    if (smoothValues.length > 0) {
-      values = smoothValues;
-    }
-    var elevations = [];
-    var sleep = 0;
-    var requestSize = 512;
-    getNextElevationSet(0, values, elevations, sleep, requestSize);
-  }
-
-  function smooth() {
+   function smooth() {
     var dataLength = rawValues.length;
     if (dataLength == 0) {
       return;
@@ -461,8 +366,6 @@ $(document).ready(function(){
   }
 
   function parseValues() {
-
-    eltGoogleStatus.hide();
 
     smoothValues = [];
     var gpxFileInfo = gpxFile.parseGPX(xml);

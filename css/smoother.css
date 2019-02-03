@@ -226,15 +226,6 @@ circle.original {
   font-size: 20px;
 }
 
-#elosoft {
-  display: none;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -moz-opacity: 0;
-  -khtml-opacity: 0;
-  opacity: 0;
-}
-
 div.tooltip {
   position: absolute;
   text-align: left;

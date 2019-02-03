@@ -121,7 +121,7 @@ GPXFile = function() {
         // set it to the value of the previous point, or an arbitrary value of
         // 100 meters if there is no previous elevation.
         if (previous && previous.ele) {
-          point.ele =  previous;
+          point.ele =  previous.ele;
         } else {
           point.ele =  100;
         }
