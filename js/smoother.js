@@ -85,7 +85,7 @@ $(document).ready(function(){
 
   function updateUI(points, totalSlope) {
     displaySlope(totalSlope, points.length);
-    graph.setLine(points, "modified");
+    graph.setLine(points, "modified", true);
     updateNewXML(gpxFile.generateNewGPX(newXML, points));
   }
 
@@ -129,11 +129,11 @@ $(document).ready(function(){
     var targetButton = $(event.target).parent();
     targetButton.addClass('active');
     graph.graphType(targetButton.data("target"));
-    graph.reset(true);
+    graph.reset();
     if (rawValues.length)
-      graph.setLine(rawValues, "original");
+      graph.setLine(rawValues, "original", true);
     if (smoothValues.length)
-      graph.setLine(smoothValues, "modified");
+      graph.setLine(smoothValues, "modified", true);
   }
 
   function onHideOriginal() {
@@ -142,7 +142,7 @@ $(document).ready(function(){
 
    function smooth() {
     var dataLength = rawValues.length;
-    if (dataLength == 0) {
+    if (dataLength === 0) {
       return;
     }
 
@@ -157,8 +157,8 @@ $(document).ready(function(){
       toSmooth = smoothValues;
     }
     var selected = graph.selected();
-    var startDistance = selected[0] * totalDistance;
-    var endDistance = selected[1] * totalDistance;
+    var startDistance = selected[0];
+    var endDistance = selected[1];
     var distance = 0;
     var newElevations = [];
     for (var i = 0; i < dataLength; i++) {
@@ -199,7 +199,7 @@ $(document).ready(function(){
 
   function flatten() {
     var dataLength = rawValues.length;
-    if (dataLength == 0)
+    if (dataLength === 0)
       return;
     var toFlatten = rawValues;
     if (smoothValues.length > 0) {
@@ -210,8 +210,8 @@ $(document).ready(function(){
     var previous = null;
     var totalSlope = 0;
     var selected = graph.selected();
-    var startDistance = selected[0] * totalDistance;
-    var endDistance = selected[1] * totalDistance;
+    var startDistance = selected[0];
+    var endDistance = selected[1];
     var distance = 0;
     for (var i = 0; i < dataLength; i++) {
       var point = jQuery.extend(true, {},  toFlatten[i]);
@@ -239,7 +239,7 @@ $(document).ready(function(){
 
   function elevate () {
     var dataLength = rawValues.length;
-    if (dataLength == 0)
+    if (dataLength === 0)
     return;
     var toElevate = rawValues;
     if (smoothValues.length > 0) {
@@ -249,8 +249,8 @@ $(document).ready(function(){
     var elevatedValues = [];
     var elevateValue = Number($("#elevateValue").val());
     var selected = graph.selected();
-    var startDistance = selected[0] * totalDistance;
-    var endDistance = selected[1] * totalDistance;
+    var startDistance = selected[0];
+    var endDistance = selected[1];
     var totalSlope = 0;
     for (var i = 0; i < dataLength; i++) {
       var point = jQuery.extend(true, {},  toElevate[i]);
@@ -267,7 +267,7 @@ $(document).ready(function(){
 
   function setRange() {
     var dataLength = rawValues.length;
-    if (dataLength == 0)
+    if (dataLength === 0)
       return;
     var toFlatten = rawValues;
     if (smoothValues.length > 0) {
@@ -277,8 +277,8 @@ $(document).ready(function(){
     var maxSlope = Number($("#maxSlope").val()) / 100;
     var minSlope = Number($("#minSlope").val()) / 100;
     var selected = graph.selected();
-    var startDistance = selected[0] * totalDistance;
-    var endDistance = selected[1] * totalDistance;
+    var startDistance = selected[0];
+    var endDistance = selected[1];
     var distance = 0;
     var previous = null;
     var totalSlope = 0;
@@ -360,13 +360,12 @@ $(document).ready(function(){
       smoothValues = [];
       updateNewXML(gpxFile.generateNewGPX(newXML, rawValues));
       graph.reset();
-      graph.setLine(rawValues, "original");
+      graph.setLine(rawValues, "original", false);
       displaySlope(rawTotalSlope, rawValues.length);
     }
   }
 
   function parseValues() {
-
     smoothValues = [];
     var gpxFileInfo = gpxFile.parseGPX(xml);
     gpxName = gpxFileInfo.gpxName;
@@ -378,7 +377,7 @@ $(document).ready(function(){
     $("#gpxName").val(gpxName);
     $("#gpxDescription").val(gpxDescription);
     displaySlope(rawTotalSlope, rawValues.length);
-    graph.setLine(rawValues, "original");
+    graph.setLine(rawValues, "original", false);
     if (gpxFileInfo.bElevationAdded) {
       eltElevationStatus.show();
       updateNewXML(gpxFile.generateNewGPX(xml, rawValues));
@@ -386,12 +385,11 @@ $(document).ready(function(){
       eltElevationStatus.hide();
       updateNewXML(xml);
     }
-
   }
 
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
-    if (files.length == 0)
+    if (files.length === 0)
       return;
     var reader = new FileReader();
     reader.onload = function() {

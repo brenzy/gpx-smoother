@@ -7,16 +7,16 @@ AreaGraph = function() {
   };
 
   areaGraph.yAxisText = function() {
-    return (graphType == "slopeDistance") ? "Slope (%)" : "Elevation (m)";
+    return (graphType === "slopeDistance") ? "Slope (%)" : "Elevation (m)";
   };
 
   areaGraph.draw = function() {
     focus.select(".x.axis").call(xAxis);
     focus.select(".y.axis").call(yAxis);
-    if (graphType=="slopeDistance") {
+    if (graphType === "slopeDistance") {
       focus.selectAll("path.slope").attr("d", slopeLine);
       focus.selectAll("circle").attr("cx", function(d) { return xScale(d.totalDistance - d.distance/2); });
-      focus.selectAll("circle").attr("cy", function(d) { return  yScale(parseInt(d.slope * 1000) / 10); });
+      focus.selectAll("circle").attr("cy", function(d) { return  yScale(Math.floor(d.slope * 1000) / 10); });
     } else {
       focus.selectAll("path.elevation").attr("d", elevationLine);
       focus.selectAll("circle").attr("cx", function(d) { return xScale(d.totalDistance); });
@@ -34,19 +34,37 @@ AreaGraph = function() {
     miniSvg.selectAll("path.slope").attr("d", miniSlopeLine);
   };
 
+  areaGraph.drawSelectionHandles = function (selection) {
+    var handleRange = selection.map(miniXScale);
+    handle
+      .attr("display", null)
+      .attr("transform", function (d, i) {
+        var handleOffset = 5;
+        var rotate = 90;
+        var xOffset = handleRange[i] + handleOffset;
+        if (i === 0) {
+          xOffset = handleRange[i] - handleOffset;
+          rotate = rotate * -1;
+        }
+        return "translate(" + xOffset + "," + miniHeight / 2 + ") rotate(" + rotate + ")";
+      });
+  };
+
   areaGraph.brushed = function() {
-    var xDomain = miniXScale.domain();
-    var brushExtent = brush.extent();
-    xScale.domain(brush.empty() ?xDomain : [xDomain[1] * brushExtent[0], xDomain[1] * brushExtent[1]]);
+    if (d3.event && d3.event.selection) {
+      selection = d3.event.selection.map(miniXScale.invert);
+    }
+    areaGraph.drawSelectionHandles(selection);
+    xScale.domain(selection);
     focus.select(".x.axis").call(xAxis);
     focus.selectAll("path.elevation").attr("d", elevationLine);
     focus.selectAll("path.slope").attr("d", slopeLine);
-    if (graphType == "slopeDistance") {
+    if (graphType === "slopeDistance") {
       focus.selectAll("circle").attr("cx", function(d) {
         return xScale(d.totalDistance - d.distance/2);
       });
       focus.selectAll("circle").attr("cy", function(d) {
-        return yScale(parseInt(d.slope * 1000) / 10);
+        return yScale(parseInt((d.slope * 1000).toString()) / 10);
       });
     } else {
       focus.selectAll("circle").attr("cx", function(d) { return xScale(d.totalDistance); });
@@ -62,12 +80,13 @@ AreaGraph = function() {
     });
   };
 
+  // Returns the selected data range
   areaGraph.selected = function() {
-    return(brush.extent());
+    return(selection);
   };
 
   areaGraph.defaultYExtent = function() {
-    return (graphType == "slopeDistance") ? [-20, 20] : [0, 1400];
+    return (graphType === "slopeDistance") ? [-20, 20] : [0, 1400];
   };
 
   areaGraph.showOriginal = function(show) {
@@ -79,7 +98,7 @@ AreaGraph = function() {
     focus.selectAll("polygon.original").style("opacity", opacity);
   };
 
-  areaGraph.reset = function(maintainSelection) {
+  areaGraph.reset = function() {
     lines = [];
     yAxisLabel.text(areaGraph.yAxisText());
     miniYLabel.text(areaGraph.yAxisText());
@@ -92,11 +111,6 @@ AreaGraph = function() {
     var yExtent = areaGraph.defaultYExtent();
     yScale.domain(yExtent);
     miniYScale.domain(yExtent);
-    if (!maintainSelection) {
-      xScale.domain(miniXScale.domain());
-      brush.extent([0,1]);
-      brushg.call(brush);
-    }
     areaGraph.draw();
   };
 
@@ -105,7 +119,7 @@ AreaGraph = function() {
   };
 
   areaGraph.createProfileLine = function(linePoints, lineType) {
-    if (lineType != "original") {
+    if (lineType !== "original") {
       focus.selectAll("polygon.original").remove();
     }
     miniLines.append("path")
@@ -155,7 +169,7 @@ AreaGraph = function() {
         return xScale(d.totalDistance - d.distance/2);
       })
       .attr("cy", function(d) {
-        return  yScale(parseInt(d.slope * 1000) / 10);
+        return  yScale(parseInt((d.slope * 1000).toString()) / 10);
       })
       .on("mouseover", areaGraph.tooltipDisplay)
       .on("mouseout", function() {
@@ -197,8 +211,9 @@ AreaGraph = function() {
   };
 
   areaGraph.tooltipDisplay = function(point) {
-    var offsetLeft = graphElement.offsetLeft;
-    var offsetTop = graphElement.offsetTop;
+    var bbox = graphElement.getBoundingClientRect();
+    var offsetLeft = bbox.x + window.pageXOffset;
+    var offsetTop = bbox.y + window.pageYOffset;
     tooltip.transition()
       .duration(200)
       .style("opacity", .9);
@@ -206,13 +221,13 @@ AreaGraph = function() {
       "<div>Slope: " + (parseInt(point.slope * 1000) / 10) +"%</div>" +
       "<div>Distance: " + (parseInt(point.totalDistance / 10) / 100) + "km</div>" +
       "<div>Elevation: " + (parseInt(point.ele * 100) / 100) + "m</div>");
-    var eltTooltip = $(tooltip[0]);
-    var width = eltTooltip.outerWidth();
+    var eltTooltip = d3.select(".tooltip").node();
+    var width = eltTooltip.clientWidth;
     var xPos = offsetLeft - width/2 + margin.left;
     if (xPos + width > offsetLeft + dimensions.width) {
       xPos = offsetLeft + dimensions.width - width;
     }
-    var yPos = offsetTop - eltTooltip.outerHeight() - 12 + margin.top;
+    var yPos = offsetTop - eltTooltip.clientHeight - 12 + margin.top;
     if (this.tagName== "polygon") {
       xPos += xScale(point.totalDistance - point.distance/2);
       var y1 = yScale(point.ele);
@@ -227,34 +242,33 @@ AreaGraph = function() {
     tooltip.style("top",  yPos.toString() + "px");
   };
 
-  areaGraph.setLine = function(points, lineType) {
+  areaGraph.setLine = function(points, lineType, maintainSelection) {
     lines.push(points);
     var allPoints = [];
     var length = lines.length;
     for (var line = 0; line < length; line++) {
       allPoints = allPoints.concat(lines[line]);
     }
-    if (lineType == "original") {
+    if (lineType === "original") {
       var xExtents = d3.extent(allPoints, function(d) {
         return d.totalDistance;
       });
-      xScale.domain(xExtents);
       miniXScale.domain(xExtents);
-      areaGraph.brushed();
     } else {
       focus.selectAll("circle." + lineType).remove();
       focus.selectAll("path." + lineType).remove();
       miniSvg.selectAll("path." + lineType).remove();
       focus.selectAll("polygon").remove();
     }
+
     var yExtent = d3.extent(allPoints, function(d) {
-      if (graphType == "slopeDistance") {
-        return (parseInt(d.slope * 1000) / 10);
+      if (graphType === "slopeDistance") {
+        return (parseInt((d.slope * 1000).toString()) / 10);
       } else {
         return d.ele;
       }
     });
-    if (yExtent[0] == yExtent[1]) {
+    if (yExtent[0] === yExtent[1]) {
       if (yExtent[0] > 0) {
         yExtent = [0, yExtent[1]];
       } else  if (yExtent[0] < 0){
@@ -266,18 +280,22 @@ AreaGraph = function() {
     yScale.domain(yExtent);
     miniYScale.domain(yExtent);
 
-    if (graphType == "eleProfile")
+    if (!maintainSelection) {
+      xScale.domain(xExtents);
+      gBrush.call(brush.move, xScale.range());
+    }
+
+    if (graphType === "eleProfile")
       areaGraph.createProfileLine(points, lineType);
-    else if (graphType == "slopeDistance")
+    else if (graphType === "slopeDistance")
       areaGraph.createSlopeLine(points, lineType);
     else
       areaGraph.createElevationLine(points, lineType);
 
-    if (lineType == "original" && !showOriginal) {
+    if (lineType === "original" && !showOriginal) {
       areaGraph.showOriginal(false);
     }
     areaGraph.draw();
-
   };
 
   areaGraph.legend = function() {
@@ -285,13 +303,12 @@ AreaGraph = function() {
     var width = 200;
     var height = 30;
 
-    var x = d3.scale.linear()
+    var xLegend = d3.scaleLinear()
       .domain([-25, 25])
       .range([0, width]);
 
-    var xAxisLegend= d3.svg.axis()
-      .scale(x)
-      .orient("bottom")
+    var xAxisLegend = d3.axisBottom()
+      .scale(xLegend)
       .tickSize(13)
       .tickValues(colorScale.domain());
 
@@ -305,14 +322,16 @@ AreaGraph = function() {
     g.selectAll("rect")
       .data(colorScale.range().map(function(color) {
         var d = colorScale.invertExtent(color);
-        if (d[0] == null) d[0] = x.domain()[0];
-        if (d[1] == null) d[1] = x.domain()[1];
+        if (d[0] === null || d[0] === undefined) d[0] = xLegend.domain()[0];
+        if (d[1] === null || d[1] === undefined) d[1] = xLegend.domain()[1];
         return d;
       }))
       .enter().append("rect")
       .attr("height", 8)
-      .attr("x", function(d) { return x(d[0]); })
-      .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+      .attr("x", function(d) { return xLegend(d[0]); })
+      .attr("width", function(d) {
+        return xLegend(d[1]) - xLegend(d[0]);
+      })
       .style("fill", function(d) { return colorScale(d[0]); });
 
     g.call(xAxisLegend);
@@ -329,22 +348,14 @@ AreaGraph = function() {
   var graphType = "elevationDistance";
   var showOriginal = true;
 
-  var xScale = d3.scale.linear()
+  var xScale = d3.scaleLinear()
     .range([0, width])
-    .domain([0, 100000]);
-  var yScale = d3.scale.linear()
+    .domain([0, 100000])
+    .nice();
+  var yScale = d3.scaleLinear()
     .range([height, 0])
-    .domain(areaGraph.defaultYExtent());
-
-  var xAxis = d3.svg.axis()
-    .scale(xScale)
-    .tickFormat(function(d) {
-      return parseInt(d / 100) / 10;
-    })
-    .orient("bottom");
-  var yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient("left");
+    .domain(areaGraph.defaultYExtent())
+    .nice();
 
   var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -353,6 +364,10 @@ AreaGraph = function() {
   var focus = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  var xAxis = d3.axisBottom(xScale)
+    .tickFormat(function(d) {
+      return parseInt((d / 100).toString()) / 10;
+    });
   focus.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
@@ -364,8 +379,9 @@ AreaGraph = function() {
     .attr("y", -6)
     .text("Distance (km)");
 
-  var yAxisVis = focus.append("g");
-  yAxisVis.attr("class", "y axis")
+  var yAxis = d3.axisLeft(yScale);
+  var yAxisVis = focus.append("g")
+    .attr("class", "y axis")
     .call(yAxis);
   var yAxisLabel = yAxisVis.append("text");
   yAxisLabel.attr("class", "y label")
@@ -375,7 +391,7 @@ AreaGraph = function() {
     .style("text-anchor", "end")
     .text(areaGraph.yAxisText());
 
-  var clip = svg.append("defs")
+  svg.append("defs")
     .append("clipPath")
     .attr("id", "clip")
     .append("rect")
@@ -386,52 +402,52 @@ AreaGraph = function() {
   focus.append("g")
     .attr("clip-path", "url(#clip)");
 
-  var colorScale = d3.scale.threshold()
+  var colorScale = d3.scaleThreshold()
     .domain([-20, -15, -10, -5, 0, 5, 10, 15, 20])
     .range(["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"]);
 
   // Get the position of the graph so we can set the
   // the offset of the tooltip
-  var graphElement = $("svg")[0];
+  var graphElement = svg.node();
 
   var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-  var elevationLine = d3.svg.line()
+  var elevationLine = d3.line()
     .x(function(d) {
       return xScale(d.totalDistance);
     })
     .y(function(d) {
       return yScale(d.ele);
     });
-  var slopeLine = d3.svg.line()
+  var slopeLine = d3.line()
     .x(function(d) {
       return xScale(d.totalDistance);
     })
     .y(function(d) {
-      return yScale(parseInt(d.slope * 1000) / 10);
+      return yScale(parseInt((d.slope * 1000).toString()) / 10);
     })
-    .interpolate("step-before");
+    .curve(d3.curveStepBefore);
 
   var miniDimensions = {width: dimensions.width, height: 200};
   var miniHeight = miniDimensions.height - margin.top - margin.bottom;
 
-  var miniXScale = d3.scale.linear()
+  var miniXScale = d3.scaleLinear()
     .range([0, width])
-    .domain([0, 100000]);
-  var miniYScale = d3.scale.linear()
+    .domain([0, 100000])
+    .nice();
+  var miniYScale = d3.scaleLinear()
     .range([miniHeight, 0])
-    .domain([0, 1400]);
-  var miniXAxis = d3.svg.axis()
+    .domain([0, 1400])
+    .nice();
+  var miniXAxis = d3.axisBottom()
     .scale(miniXScale)
     .tickFormat(function(d) {
-      return parseInt(d / 100) / 10
-    })
-    .orient("bottom");
-  var miniYAxis = d3.svg.axis()
-    .scale(miniYScale)
-    .orient("left");
+      return parseInt((d / 100).toString()) / 10
+    });
+  var miniYAxis = d3.axisLeft()
+    .scale(miniYScale);
 
   var miniSvg = d3.select("#mini").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -460,55 +476,50 @@ AreaGraph = function() {
     .style("text-anchor", "end")
     .text(areaGraph.yAxisText());
 
-  var miniElevationLine = d3.svg.line()
+  var miniElevationLine = d3.line()
     .x(function(d) {
       return miniXScale(d.totalDistance);
     })
     .y(function(d) {
       return miniYScale(d.ele);
     });
-  var miniSlopeLine = d3.svg.line()
+  var miniSlopeLine = d3.line()
     .x(function(d) {
       return miniXScale(d.totalDistance);
     })
     .y(function(d) {
-        return miniYScale((parseInt(d.slope * 1000) / 10));
+        return miniYScale(parseInt((d.slope * 1000).toString()) / 10);
     })
-    .interpolate("step-before");
+    .curve(d3.curveStepBefore);
 
-   var xBrushScale = d3.scale.linear()
-    .range([0, width]);
+  var selection  = miniXScale.domain();
+  var brush = d3.brushX()
+    .extent([[0, 0], [width, miniHeight]])
+    .on("brush", areaGraph.brushed);
 
-  var brush = d3.svg.brush()
-    .x(xBrushScale)
-    .on("brush", areaGraph.brushed)
-    .extent([0, 1]);
-
-  var handle = d3.svg.symbol()
-    .type("triangle-up")
+  var triangleShape = d3.symbol()
+    .type(d3.symbolTriangle)
     .size(200);
 
   // Add a group to keep the lines under the brush
   var miniLines = miniSvg.append("g").attr("id", "lines");
 
-  var brushg = miniSvg.append("g")
+  var gBrush = miniSvg.append("g")
     .attr("class", "brush")
     .call(brush);
 
-  brushg.selectAll(".resize").append("path")
-    .attr("d", handle)
-    .attr("transform", function(d) {
-      var left = 10;
-      var rotate = 90;
-      if (d == "w") {
-        left = left * -1;
-        rotate = rotate * -1;
-      }
-      return "translate(" + left + "," + miniHeight / 2 + ") rotate(" + rotate + ")";
-    });
+  var handle = gBrush.selectAll(".handle--custom")
+    .data([{type: "w"}, {type: "e"}])
+    .enter().append("path")
+    .attr("class", "handle--custom")
+    .attr("fill", "#666")
+    .attr("fill-opacity", 0.8)
+    .attr("stroke", "#000")
+    .attr("stroke-width", 1.5)
+    .attr("cursor", "ew-resize")
+    .attr("d", triangleShape);
 
-  brushg.selectAll("rect")
-    .attr("height", miniHeight);
+  gBrush.call(brush.move, xScale.range());
 
   areaGraph.legend();
 
