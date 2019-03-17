@@ -3,9 +3,16 @@ body {
   font-size: 20px;
   background: #fcfcfa;
   color: #333;
-  margin: 1em auto 4em auto;
-  width: 960px;
 }
+
+.nav-bar,
+.about,
+.newStuff,
+.smootherView {
+  margin: 10px;
+  width: calc(100% - 20px);
+}
+
 .about {
   display: none;
   height: 0;
@@ -14,17 +21,36 @@ button {
   font-family: "PT Sans", sans-serif;
   font-size: 20px;
 }
-.navBar {
-  font-size: 40px;
+
+.tabs button {
+  font-size: 20px;
   font-weight: 300;
-  letter-spacing: -2px;
-  color: black;
+  letter-spacing: normal;
+  padding: 5px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: #08c;
 }
-.navBar.nav-pills>li>a {
-  padding-top: 15px;
-  padding-bottom: 15px;
+
+.tabs button.active {
+  background-color: #08c;
+  color: white;
 }
-.chartBar.nav {
+
+.tabs button:hover {
+  background-color: #005580;
+  color: white;
+  cursor: pointer;
+}
+
+.chartBar button {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.chartBar {
   margin-bottom: 0;
 }
 .description {
@@ -32,16 +58,27 @@ button {
   background: #cae3fc;
   padding: 20px;
 }
+
 .legend,
 .picker {
   margin-left: 20px;
 }
+
+.input-section .input-group {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+
 .picker button,
 .picker input,
 .picker label,
-.inputSection input,
-.inputSection label {
+.input-section input,
+.input-section label {
   display: inline-block;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .picker label {
   font-size: 16px;
@@ -56,7 +93,7 @@ button {
 }
 #gpxFile {
   height: 30px;
-  width: 600px;
+  width: 100%;
   font-family: "PT Sans", sans-serif;
   font-size: 20px;
 }
@@ -71,12 +108,12 @@ button {
 }
 #chart {
   font: 10px sans-serif;
-  width: 960px;
+  width: 100%;
   height: 500px;
 }
 #mini {
   font: 10px sans-serif;
-  width: 960px;
+  width: 100%;
   height: 200px;
   overflow: hidden;
 }
@@ -119,15 +156,18 @@ button {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   color: red;
 }
-.inputSection label{
+.input-section label{
   display: inline-block;
-  text-align :right;
-  width: 140px;
+  text-align :left;
+  width: 120px;
   margin-right: 10px;
   font-size: 20px;
 }
-.inputSection input {
-  width: 700px;
+.input-section input {
+  width: auto;
+  flex: 1 1 auto;
+  display: block;
+  flex-grow: 1;
   font-family: "PT Sans", sans-serif;
   font-size: 20px;
   margin-top: 5px;
@@ -190,6 +230,7 @@ circle.modified {
 circle.original {
   fill: blue;
 }
+
 .legend .swatch {
   width:40px;
   height: 4px;
@@ -199,7 +240,6 @@ circle.original {
 }
 
 .modified .swatch {
-  margin-left: 20px;
   background-color:green;
 }
 
@@ -207,22 +247,34 @@ circle.original {
   background-color: blue;
 }
 
-.legend .average {
-  margin-left: 20px;
+.legend .original,
+.legend .modified,
+.legend .slope-legend-wrapper {
+  margin-right: 20px;
+  display: inline-block;
 }
 
 #slopeDistance {
   display: none;
 }
 
-.checkbox.inline.chkHide {
-  padding-bottom: 0;
-  padding-top: 0;
-  margin-left: 20px;
+.inline {
+  display: inline-block;
 }
 
-.chkHide label {
+.checkbox {
+  cursor: pointer;
+}
+
+.checkbox.show-original {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.show-original label,
+.show-original input {
   font-size: 20px;
+  cursor: pointer;
 }
 
 div.tooltip {
@@ -257,14 +309,23 @@ div.tooltip:after {
   text-align: center;
 }
 
+.instruct.legend {
+  line-height: 30px;
+}
+.slope-legend-wrapper {
+  display: inline-block;
+  line-height: 60px;
+}
+
 .slope-legend {
   width: 200px;
-  height: 30px;
+  height: 60px;
   display: inline-block;
   vertical-align: bottom;
-  margin-left: 10px;
+  margin-left: 0;
   margin-right: 10px;
 }
+
 .slope-legend svg {
   padding-top: 10px;
 }
@@ -280,4 +341,12 @@ div.tooltip:after {
 
 .key .tick {
   font-size: 12px;
+}
+
+@media (min-width: 600px)  {
+  .nav-bar button {
+    font-size: 40px;
+    font-weight: 300;
+    letter-spacing: -2px;
+  }
 }

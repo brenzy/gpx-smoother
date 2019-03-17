@@ -54,9 +54,9 @@ $(document).ready(function(){
     $('#flatten').click(flatten);
     $('#elevate').click(elevate);
     $('#reload').click(reloadValues);
-    $('.navBar li').click(toggleView);
-    $('.chartBar li').click(toggleChart);
-    $(".chkHide").click(onHideOriginal);
+    $('.nav-bar button').click(toggleView);
+    $('.chart-bar button').click(toggleChart);
+    $(".show-original").click(onToggleOriginalDisplay);
 
     eltGPXName.change(function() {
       updateXMLMetadata();
@@ -90,7 +90,7 @@ $(document).ready(function(){
   }
 
   function toggleView(event) {
-    var active = $(".navBar li.active");
+    var active = $(".nav-bar button.active");
     active.removeClass("active");
     if (active.hasClass("btnSmooth")) {
       $(".smootherView").hide();
@@ -103,7 +103,7 @@ $(document).ready(function(){
       newStuff.hide();
       newStuff.height(0);
     }
-    var targetButton = $(event.target).parent();
+    var targetButton = $(event.target);
     targetButton.addClass('active');
     if (targetButton.hasClass('btnAbout')) {
       var aboutSection =  $(".about");
@@ -119,14 +119,17 @@ $(document).ready(function(){
       });
     } else if (targetButton.hasClass('btnSmooth')) {
       $(".smootherView").show();
+      if (graph) {
+        graph.resize();
+      }
     }
   }
 
   function toggleChart(event) {
     event.preventDefault();
-    var active = $(".chartBar li.active");
+    var active = $(".chart-bar button");
     active.removeClass("active");
-    var targetButton = $(event.target).parent();
+    var targetButton = $(event.target);
     targetButton.addClass('active');
     graph.graphType(targetButton.data("target"));
     graph.reset();
@@ -136,8 +139,8 @@ $(document).ready(function(){
       graph.setLine(smoothValues, "modified", true);
   }
 
-  function onHideOriginal() {
-    graph.showOriginal(!($('.chkHide input').is(':checked')));
+  function onToggleOriginalDisplay() {
+    graph.showOriginal($('.show-original input').is(':checked'));
   }
 
    function smooth() {
