@@ -1,180 +1,192 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<html>
+<html lang="en">
 <head>
   <title>GPX Smoother</title>
   <meta name="description" content="Utility to smooth GPX files for use in a Tacx trainer.">
-  <LINK href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <LINK href="css/smoother.css" rel="stylesheet" type="text/css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+  <link href="css/smoother.css" rel="stylesheet" type="text/css">
+
+  <script src="js/d3.v5.min.js" charset="utf-8"></script>
+  <script src="js/jquery.v2.0.3.min.js"></script>
   <script src="js/utilities.js"></script>
   <script src="js/gpxFile.js"></script>
   <script src="js/smoother.js"></script>
   <script src="js/VincentyFormula.js"></script>
   <script src="js/areaGraph.js"></script>
-
 </head>
 <body class="gpxSmoother">
-  <ul class="navBar nav nav-pills">
-    <li class="btnSmooth active">
-      <a href="#">GPX Smoother</a>
-    </li>
-    <li class="btnAbout">
-      <a href="#">About</a>
-    </li>
-    <li class="btnUpdates">
-      <a href="#">Updates</a>
-    </li>
-  </ul>
+  <div class="nav-bar tabs">
+    <button class="btnSmooth active">
+      GPX Smoother
+    </button>
+    <button class="btnAbout">
+      About
+    </button>
+    <button class="btnUpdates">
+      Updates
+    </button>
+  </div>
 
   <div class="about">
-    <div class="description">
-      <p>
-        I love riding GPS routes on my Tacx trainer, but I wasn't happy with the built-in
-        functionality for changing the elevation profile of a ride. The built-in smoothing is very
-        slow and still leaves a lot of spikes in elevation. It is next to impossible to remove steep
-        downhill grades that I don't want as part of my indoor training. </p>
+  <div class="description">
+    <p>
+      I love riding GPS routes on my Tacx trainer, but I wasn't happy with the built-in
+      functionality for changing the elevation profile of a ride. The built-in smoothing is very
+      slow and still leaves a lot of spikes in elevation. It is next to impossible to remove steep
+      downhill grades that I don't want as part of my indoor training. </p>
 
-      <p>
-        The GPX Smoother lets you load a GPX file and apply a few different "smoothing" algorithms
-        to the elevation. The resulting GPX file can be saved to a file and then imported back into
-        your Tacx trainer software.<br/> <br/> Smooth - uses simple box-score smoothing to smooth
-        the elevation over 5 points.<br/> Set Range - lets you set the maximum and minimum
-        slope.<br/> Flatten - lets you set the maximum change in slope between any two points.<br/>
-        <br/> Slide the triangular handles on the smaller graph to select only a portion of the ride
-        to smooth. This allows you create a ride similar to a Slope-Distance Catalyst ride. </p>
+    <p>
+      The GPX Smoother lets you load a GPX file and apply a few different "smoothing" algorithms
+      to the elevation. The resulting GPX file can be saved to a file and then imported back into
+      your Tacx trainer software.<br/> <br/> Smooth - uses simple box-score smoothing to smooth
+      the elevation over 5 points.<br/> Set Range - lets you set the maximum and minimum
+      slope.<br/> Flatten - lets you set the maximum change in slope between any two points.<br/>
+      <br/> Slide the triangular handles on the smaller graph to select only a portion of the ride
+      to smooth. This allows you create a ride similar to a Slope-Distance Catalyst ride. </p>
 
-      <p>
-        The code for the GPX Smoother is now on github at https://github.com/brenzy/gpx-smoother. </p>
+    <p>
+      The code for the GPX Smoother is now on github at https://github.com/brenzy/gpx-smoother. </p>
 
-      <p>
-        This is a work in progress. Drop me a line at <span class="mailme"></span> to request
-        changes or report issues. </p>
-        
-    </div>
+    <p>
+      This is a work in progress. Drop me a line at <span class="mailme"></span> to request
+      changes or report issues. </p>
+
+  </div>
   </div>
 
   <div class="newStuff">
-    <div class="description">
-      <p>Bug Fix (February 16, 2019):<br/> Fix the tooltips and upgrade to d3.js v5.</p>
+  <div class="description">
+    <p>New Functionality (March 23, 2019):<br/>Make the smoother page responsive.</p>
 
-      <p>Bug Fix & Remove Google Maps functionality (February 2, 2019):<br/> Fix for adding the previous elevation to a
-        point. Google Maps elevation is no longer available free of charge, so the functionality to add elevation
-        has been removed.</p>
+    <p>Bug Fix (February 16, 2019):<br/> Fix the tooltips and upgrade to d3.js v5.</p>
 
-      <p>Functionality Change(January 21, 2019):<br/> When an elevation tag is missing, the GPX Smoother will add an
-        elevation tag containing the same value as the previous point.  If there is no elevation in the GPX file an
-        arbitrary value of 100 metres will be used for elevation.</p>
+    <p>Bug Fix & Remove Google Maps functionality (February 2, 2019):<br/> Fix for adding the previous elevation to a
+      point. Google Maps elevation is no longer available free of charge, so the functionality to add elevation
+      has been removed.</p>
 
-      <p>New Functionality (January 1, 2015):<br/>Added elevation profile and changed slope to a
-        step chart.</p>
+    <p>Functionality Change(January 21, 2019):<br/> When an elevation tag is missing, the GPX Smoother will add an
+      elevation tag containing the same value as the previous point.  If there is no elevation in the GPX file an
+      arbitrary value of 100 metres will be used for elevation.</p>
 
-      <p>New Functionality (November 1, 2014):<br/> Added a Distance vs. Slope graph for Kostya,
-       added "Hide Original" checkbox, swap order of min and max slope boxes.</p>
+    <p>New Functionality (January 1, 2015):<br/>Added elevation profile and changed slope to a
+      step chart.</p>
 
-      <p>New Functionality (September 13, 2014):<br/> Added the ability to adjust the number of
-        points to smooth over and the ability to shift the slope upwards or downwards. Marcel,
-        thanks for sending along these two changes! </p>
+    <p>New Functionality (November 1, 2014):<br/> Added a Distance vs. Slope graph for Kostya,
+     added "Hide Original" checkbox, swap order of min and max slope boxes.</p>
 
-      <p>New Functionality (March 8, 2014):<br/> Add ability to add elevation from Google Maps
-        Elevation Service. </p>
+    <p>New Functionality (September 13, 2014):<br/> Added the ability to adjust the number of
+      points to smooth over and the ability to shift the slope upwards or downwards. Marcel,
+      thanks for sending along these two changes! </p>
 
-      <p>New Functionality (January 26, 2014):<br/> Added zoom to the selected portion of the ride.
-      </p>
+    <p>New Functionality (March 8, 2014):<br/> Add ability to add elevation from Google Maps
+      Elevation Service. </p>
 
-      <p>New Functionality (January 12, 2014):<br/> Use the drag handles to select the portion of
-        the ride to be smoothed. </p>
+    <p>New Functionality (January 26, 2014):<br/> Added zoom to the selected portion of the ride.
+    </p>
 
-      <p>Bug Fix (January 7, 2014):<br/> Trying to download large files will crash the browser.
-        Added a message to use the copy and paste method instead. Thanks Guy! </p>
-    </div>
+    <p>New Functionality (January 12, 2014):<br/> Use the drag handles to select the portion of
+      the ride to be smoothed. </p>
+
+    <p>Bug Fix (January 7, 2014):<br/> Trying to download large files will crash the browser.
+      Added a message to use the copy and paste method instead. Thanks Guy! </p>
+  </div>
   </div>
 
   <div class="smootherView">
-    <div class="instruct">1. Select a gpx file:</div>
-    <div class="picker"><input id="gpxFile" type="file" accept=".gpx"/></div>
-    <span class="eleStatus">Missing elevation tags have been added and set to the value of the previous point or 100 metres.</span>
+  <div class="instruct">1. Select a gpx file:</div>
+  <div class="picker"><input id="gpxFile" type="file" accept=".gpx"/></div>
+  <span class="eleStatus">Missing elevation tags have been added and set to the value of the previous point or 100 metres.</span>
 
-    <div class="instruct">2. Smooth the data:</div>
-    <div class="smoothing">
-      <div class="picker">
-        <button id="smooth">Smooth Values</button>
-        <label for="numPoints"> Number of points to smooth over
-          (odd): </label><input class="number" id="numPoints" type="number" value="5"/></div>
-      <div class="picker">
-        <button id="setRange">Set Slope Range</button>
-        <label for="minSlope">Minimum
-          Slope:</label><input class="number" id="minSlope" type="number" value="0"/>
-        <label for="maxSlope">Maximum
-          Slope:</label><input class="number" id="maxSlope" type="number" value="8"/>
-      </div>
-      <div class="picker">
-        <button id="flatten">Flatten Values</button>
-        <label for="maxDelta">Maximum Change In Slope Between
-          Points:</label><input class="number" id="maxDelta" type="number" value="1"/>
-      </div>
-      <div class="picker">
-        <button id="elevate">Elevate Values</button>
-        <label for="elevateValue">Shift in metres up or down:</label>
-        <input class="number" id="elevateValue" type="number" value="0"/>
+  <div class="instruct">2. Smooth the data:</div>
+  <div class="smoothing">
+    <div class="picker">
+      <button id="smooth">Smooth Values</button>
+      <label for="numPoints"> Number of points to smooth over
+        (odd): </label><input class="number" id="numPoints" type="number" value="5"/></div>
+    <div class="picker">
+      <button id="setRange">Set Slope Range</button>
+      <label for="minSlope">Minimum
+        Slope:</label><input class="number" id="minSlope" type="number" value="0"/>
+      <label for="maxSlope">Maximum
+        Slope:</label><input class="number" id="maxSlope" type="number" value="8"/>
+    </div>
+    <div class="picker">
+      <button id="flatten">Flatten Values</button>
+      <label for="maxDelta">Maximum Change In Slope Between
+        Points:</label><input class="number" id="maxDelta" type="number" value="1"/>
+    </div>
+    <div class="picker">
+      <button id="elevate">Elevate Values</button>
+      <label for="elevateValue">Shift in metres up or down:</label>
+      <input class="number" id="elevateValue" type="number" value="0"/>
+    </div>
+  </div>
+  <div class="instruct">3. Check out the resulting slope.  Hover over a point to see details:</div>
+  <div class="chart-bar tabs">
+    <button class="btnEleDistance active" data-target="eleDistance">
+      Elevation Chart
+    </button>
+    <button class="btnSlopeDistance" data-target="slopeDistance">
+      Slope Chart
+    </button>
+    <button class="btnEleProfile" data-target="eleProfile">
+      Elevation Profile
+    </button>
+  </div>
+  <div id="chart"></div>
+  <div class="instruct legend">
+    <div class="original">
+      <span class="swatch"></span>
+      <div class="checkbox inline show-original" title="Show or Hide Original">
+        <input id="show-original" type="checkbox" checked/>
+        <label for="show-original">Original</label>
       </div>
     </div>
-    <div class="instruct">3. Check out the resulting slope.  Hover over a point to see details:</div>
-    <ul class="chartBar nav nav-pills">
-      <li class="btnEleDistance  active" data-target="eleDistance">
-        <a href="#">Elevation Chart</a>
-      </li>
-      <li class="btnSlopeDistance" data-target="slopeDistance">
-        <a href="#">Slope Chart</a>
-      </li>
-      <li class="btnEleProfile" data-target="eleProfile">
-        <a href="#">Elevation Profile</a>
-      </li>
-    </ul>
-    <div id="chart"></div>
-    <div class="instruct legend">
-      <span class="original"><span class="swatch"></span><span>Original</span></span>
-      <span class="modified"><span class="swatch"></span><span>New</span></span>
-      <span><span class="slope-legend"></span><span>Slope</span></span>
-      <div class="checkbox inline chkHide">
-        <input id="chk_hide" type="checkbox"/>
-        <label for="chk_hide">Hide Original</label>
-      </div>
-      <span class="average">Average Slope:<span class="avg"></span></span>
+    <span class="modified"><span class="swatch"></span><span>New</span></span>
+    <div class="slope-legend-wrapper">
+      <span class="slope-legend"></span><span>Slope</span>
     </div>
-    <div class="instruct">4. Slide the triangles in the graph below to zoom in on a portion of the
-      ride and to select that portion of the ride to be smoothed.
-    </div>
-    <div id="mini"></div>
+  </div>
+  <div class="average">Average Slope:<span class="avg"></span></div>
 
-    <div class="instruct">5. Try different smoothing:
-      <button id="reload">Reset The Data</button>
-    </div>
 
-    <div class="instruct">6.
-      <button><a href="" id="downloadGPX">Download GPX</a></button>
+  <div class="instruct">4. Slide the triangles in the graph below to zoom in on a portion of the
+    ride and to select that portion of the ride to be smoothed.
+  </div>
+  <div id="mini"></div>
+
+  <div class="instruct">5. Try different smoothing:
+    <button id="reload">Reset The Data</button>
+  </div>
+
+  <div class="instruct">6.
+    <button><a href="" id="downloadGPX">Download GPX</a></button>
+  </div>
+  <div class="downloadStatus">This file is too large to download, please copy and paste the result
+    in step 6 instead.
+  </div>
+  <div class="input-section">
+    <div class="input-group">
+      <label for="fileName">File Name:</label>
+      <input id="fileName" type="text" value="smoother.gpx"/>
     </div>
-    <div class="downloadStatus">This file is too large to download, please copy and paste the result
-      in step 6 instead.
+    <div class="input-group">
+      <label for="gpxName">GPX Name:</label>
+      <input id="gpxName" type="text" value="Smoothed Ride"/>
     </div>
-    <div class="inputSection">
-      <div><label for="fileName">File
-        Name:</label><input id="fileName" type="text" value="smoother.gpx"/></div>
-      <div><label for="gpxName">GPX
-        Name:</label><input id="gpxName" type="text" value="Smoothed Ride"/></div>
-      <div>
-        <label for="gpxDescription">Description:</label><input id="gpxDescription" type="text" value="Created by running the ride through a smoothing algorithm."/>
-      </div>
+    <div class="input-group">
+      <label for="gpxDescription">Description:</label>
+      <input id="gpxDescription" type="text" value="Created by running the ride through a smoothing algorithm."/>
     </div>
-    <div class="instruct">7. If the download button does not work, copy (right click, Select all,
-      Copy) the contents of the box below (which contains the resulting gpx) and save to a gpx file.
-    </div>
-    <div>
-      <label for="newXML"></label><textarea id="newXML"></textarea>
-    </div>
+  </div>
+  <div class="instruct">7. If the download button does not work, copy (right click, Select all,
+    Copy) the contents of the box below (which contains the resulting gpx) and save to a gpx file.
+  </div>
+  <div>
+    <label for="newXML"></label><textarea id="newXML"></textarea>
+  </div>
   </div>
 
 </body>
