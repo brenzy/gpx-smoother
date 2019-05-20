@@ -2,6 +2,9 @@ AreaGraph = function() {
 
   var areaGraph = {};
 
+  // The selection is of the form {minX, minY, maxX maxY}, and is maintained in domain units
+  var selection = null;
+
   areaGraph.graphType = function(value) {
     graphType = value;
   };
@@ -58,21 +61,37 @@ AreaGraph = function() {
     miniSvg.selectAll("path.elevation").attr("d", miniElevationLine);
     miniSvg.selectAll("path.slope").attr("d", miniSlopeLine);
 
-    // areaGraph.draw();
-
     // Resize the clipping rectangle
     svg.select("#clip rect")
       .attr("width", width)
       .attr("y", -margin.top)
       .attr("height", height + margin.top + margin.bottom); // Leave some room at the top and bottom
 
-    // Update the brush (which will redraw the svg graph
+    // Update the brush (which will redraw the svg graph)
     brush.extent([[0, 0], [width, miniHeight]]);
     gBrush.call(brush);
-    gBrush.call(brush.move, selection.map(miniXScale));
+    console.log('resize miniXScale domain: ' + miniXScale.domain());
+    console.log('resize selection: ' + JSON.stringify(selection));
+    console.log('resize d3.event.selection: ' + d3.event.selection);
+
+    var brushRegion = null;
+    if (selection) {
+      brushRegion = [
+        [miniXScale(selection.minX), miniYScale(selection.maxY)],
+        [miniXScale(selection.maxX), miniYScale(selection.minY)]
+      ];
+    }
+    gBrush.call(brush.move, brushRegion);
   };
 
   areaGraph.draw = function() {
+    if (selection) {
+      xScale.domain([selection.minX, selection.maxX]);
+      yScale.domain([selection.minY, selection.maxY]);
+    } else {
+      xScale.domain(miniXScale.domain());
+      yScale.domain(miniYScale.domain());
+    }
     focus.select(".x.axis").call(xAxis);
     focus.select(".y.axis").call(yAxis);
     if (graphType === "slopeDistance") {
@@ -96,29 +115,28 @@ AreaGraph = function() {
     miniSvg.selectAll("path.slope").attr("d", miniSlopeLine);
   };
 
-  areaGraph.drawSelectionHandles = function (selection) {
-    var handleRange = selection.map(miniXScale);
-    handle
-      .attr("display", null)
-      .attr("transform", function (d, i) {
-        var handleOffset = 5;
-        var rotate = 90;
-        var xOffset = handleRange[i] + handleOffset;
-        if (i === 0) {
-          xOffset = handleRange[i] - handleOffset;
-          rotate = rotate * -1;
-        }
-        return "translate(" + xOffset + "," + miniHeight / 2 + ") rotate(" + rotate + ")";
-      });
-  };
-
+  // The brush selection is in pixels
   areaGraph.brushed = function() {
     if (d3.event && d3.event.selection) {
-      selection = d3.event.selection.map(miniXScale.invert);
+      selection = {
+          minX: miniXScale.invert(d3.event.selection[0][0]),
+          minY: miniYScale.invert(d3.event.selection[1][1]),
+          maxX: miniXScale.invert(d3.event.selection[1][0]),
+          maxY: miniYScale.invert(d3.event.selection[0][1]),
+      };
+      xScale.domain([selection.minX, selection.maxX]);
+      yScale.domain([selection.minY, selection.maxY]);
+    } else {
+      selection = null;
+      xScale.domain(miniXScale.domain());
+      yScale.domain(miniYScale.domain());
     }
-    areaGraph.drawSelectionHandles(selection);
-    xScale.domain(selection);
+    console.log('brushed miniXScale domain: ' + miniXScale.domain());
+    console.log('brushed selection: ' + JSON.stringify(selection));
+    console.log('brushed d3.event.selection: ' + d3.event.selection);
     focus.select(".x.axis").call(xAxis);
+    focus.select(".y.axis").call(yAxis);
+
     focus.selectAll("path.elevation").attr("d", elevationLine);
     focus.selectAll("path.slope").attr("d", slopeLine);
     if (graphType === "slopeDistance") {
@@ -144,7 +162,11 @@ AreaGraph = function() {
 
   // Returns the selected data range
   areaGraph.selected = function() {
-    return(selection);
+    if (selection) {
+      return [selection.minX, selection.maxX];
+    } else {
+      return(miniXScale.domain());
+    }
   };
 
   areaGraph.defaultYExtent = function() {
@@ -170,9 +192,6 @@ AreaGraph = function() {
     miniSvg.selectAll("path.elevation").remove();
     focus.selectAll("path.slope").remove();
     miniSvg.selectAll("path.slope").remove();
-    var yExtent = areaGraph.defaultYExtent();
-    yScale.domain(yExtent);
-    miniYScale.domain(yExtent);
     areaGraph.draw();
   };
 
@@ -318,10 +337,10 @@ AreaGraph = function() {
       allPoints = allPoints.concat(lines[line]);
     }
     if (lineType === "original") {
-      var xExtents = d3.extent(allPoints, function(d) {
+      var xExtent = d3.extent(allPoints, function(d) {
         return d.totalDistance;
       });
-      miniXScale.domain(xExtents);
+      miniXScale.domain(xExtent);
     } else {
       focus.selectAll("circle." + lineType).remove();
       focus.selectAll("path." + lineType).remove();
@@ -345,12 +364,15 @@ AreaGraph = function() {
         yExtent = areaGraph.defaultYExtent();
       }
     }
-    yScale.domain(yExtent);
     miniYScale.domain(yExtent);
 
     if (!maintainSelection) {
-      xScale.domain(xExtents);
-      gBrush.call(brush.move, xScale.range());
+      xScale.domain(miniXScale.domain());
+      yScale.domain(miniYScale.domain());
+      selection = null;
+      gBrush.call(brush.move, selection);
+    } else {
+      yScale.domain(yExtent);
     }
 
     if (graphType === "eleProfile")
@@ -439,6 +461,7 @@ AreaGraph = function() {
     .range([0, width])
     .domain([0, 100000])
     .nice();
+
   var yScale = d3.scaleLinear()
     .range([height, 0])
     .domain(areaGraph.defaultYExtent())
@@ -528,6 +551,8 @@ AreaGraph = function() {
     });
   var miniYAxis = d3.axisLeft()
     .scale(miniYScale);
+  console.log('miniXScale domain:' + miniXScale.domain());
+  console.log('selection:' + selection);
 
   gMiniSvg.append("g")
     .attr("class", "x axis")
@@ -568,14 +593,9 @@ AreaGraph = function() {
     })
     .curve(d3.curveStepBefore);
 
-  var selection  = miniXScale.domain();
-  var brush = d3.brushX()
-    .extent([[0, 0], [width, miniHeight]])
-    .on("brush", areaGraph.brushed);
-
-  var triangleShape = d3.symbol()
-    .type(d3.symbolTriangle)
-    .size(200);
+  var brush = d3.brush()
+      .extent([[0, 0], [width, miniHeight]])
+      .on("end", areaGraph.brushed);
 
   // Add a group to keep the lines under the brush
   var miniLines = gMiniSvg.append("g").attr("id", "lines");
@@ -583,19 +603,6 @@ AreaGraph = function() {
   var gBrush = gMiniSvg.append("g")
     .attr("class", "brush")
     .call(brush);
-
-  var handle = gBrush.selectAll(".handle--custom")
-    .data([{type: "w"}, {type: "e"}])
-    .enter().append("path")
-    .attr("class", "handle--custom")
-    .attr("fill", "#666")
-    .attr("fill-opacity", 0.8)
-    .attr("stroke", "#000")
-    .attr("stroke-width", 1.5)
-    .attr("cursor", "ew-resize")
-    .attr("d", triangleShape);
-
-  gBrush.call(brush.move, xScale.range());
 
   areaGraph.legend();
 
